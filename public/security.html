@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security · Bastion</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/common.js" defer></script>
+  <script src="/static/js/security.js" defer></script>
+</head>
+<body data-auth="required" data-page="security">
+  <header class="app-header">
+    <a class="brand" href="/dashboard">
+      <svg class="logo" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 3.9-2.5 7.4-6 8.9-3.5-1.5-6-5-6-8.9V6.45l6-2.25Z"/><path fill="currentColor" d="M10.5 14.6 7.9 12l1.4-1.4 1.2 1.2 4.2-4.2 1.4 1.4-5.6 5.6Z"/></svg>
+      <span>bastion</span>
+    </a>
+    <nav class="app-nav" aria-label="Main">
+      <a href="/dashboard" data-nav="dashboard">Vault</a>
+      <a href="/security" data-nav="security">Security</a>
+      <a href="/admin" data-nav="admin" data-admin-only hidden>Admin</a>
+    </nav>
+    <div class="header-right">
+      <span class="session-pill" id="session-timer"></span>
+      <span class="user-chip"><span class="avatar" id="user-avatar"></span><span class="name" id="user-name"></span></span>
+      <button class="btn btn-sm" id="logout-btn" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="settings">
+      <nav class="side-menu" aria-label="Security sections">
+        <span class="group">Account</span>
+        <a href="#overview">Overview</a>
+        <a href="#mfa">Two-factor authentication</a>
+        <a href="#password">Password</a>
+        <a href="#sessions">Sessions</a>
+        <span class="group">Inspect</span>
+        <a href="#activity">Security log</a>
+        <a href="#headers">Response headers</a>
+      </nav>
+
+      <div class="stack">
+        <section id="overview">
+          <h2 class="section-title">Overview</h2>
+          <div class="box"><div class="box-body">
+            <dl class="kv">
+              <dt>Username</dt><dd id="ov-username" class="mono"></dd>
+              <dt>Role</dt><dd id="ov-role"></dd>
+              <dt>Two-factor</dt><dd id="ov-mfa"></dd>
+              <dt>Member since</dt><dd id="ov-created"></dd>
+              <dt>Previous sign-in</dt><dd id="ov-prev"></dd>
+            </dl>
+            <p class="hint">Don't recognise the previous sign-in time? Change your password — it signs out every other session.</p>
+          </div></div>
+        </section>
+
+        <section id="mfa">
+          <h2 class="section-title">Two-factor authentication</h2>
+          <div class="box">
+            <div class="box-header">
+              <h3>Authenticator app (TOTP)</h3>
+              <span id="mfa-status"></span>
+            </div>
+
+            <div class="box-body" id="mfa-off" hidden>
+              <p class="muted">Protect your account with a 6-digit code from an authenticator app (Google Authenticator, Microsoft Authenticator, Authy, 1Password…) in addition to your password.</p>
+              <button class="btn btn-primary" id="mfa-start" type="button">Enable two-factor authentication</button>
+            </div>
+
+            <div class="box-body" id="mfa-setup" hidden>
+              <div class="mfa-setup">
+                <img class="qr" id="mfa-qr" alt="QR code for your authenticator app" width="184" height="184">
+                <div>
+                  <p><strong>1.</strong> Scan the QR code with your authenticator app.</p>
+                  <p class="small muted">Can't scan? Enter this setup key manually:</p>
+                  <code class="secret" id="mfa-secret"></code>
+                  <form id="mfa-enable-form" novalidate>
+                    <div class="form-group">
+                      <label for="mfa-code"><strong>2.</strong> Enter the 6-digit code it shows</label>
+                      <input class="input input-code" id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="XXXXXX">
+                    </div>
+                    <div class="row">
+                      <button class="btn btn-primary" type="submit">Verify and enable</button>
+                      <button class="btn btn-invisible" type="button" id="mfa-cancel">Cancel</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="box-body" id="mfa-on" hidden>
+              <p class="muted">Two-factor authentication is active. To turn it off, confirm your password and a current code.</p>
+              <form id="mfa-disable-form" novalidate>
+                <div class="form-group">
+                  <label for="mfa-off-pw">Password</label>
+                  <input class="input" id="mfa-off-pw" type="password" autocomplete="current-password" maxlength="128">
+                </div>
+                <div class="form-group">
+                  <label for="mfa-off-code">Authentication code</label>
+                  <input class="input input-code" id="mfa-off-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="XXXXXX">
+                </div>
+                <button class="btn btn-danger" type="submit">Disable two-factor authentication</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section id="password">
+          <h2 class="section-title">Change password</h2>
+          <form class="box" id="password-form" novalidate>
+            <div class="box-body">
+              <div class="form-group">
+                <label for="pw-current">Current password</label>
+                <input class="input" id="pw-current" type="password" autocomplete="current-password" maxlength="128">
+              </div>
+              <div class="form-group">
+                <label for="pw-new">New password</label>
+                <input class="input" id="pw-new" type="password" autocomplete="new-password" maxlength="128">
+                <div class="meter" aria-hidden="true"><div class="meter-bar" id="pw-meter"></div></div>
+                <div class="meter-label"><span id="pw-meter-label"></span><span>min. 12 characters</span></div>
+              </div>
+              <div class="form-group">
+                <label for="pw-confirm">Confirm new password</label>
+                <input class="input" id="pw-confirm" type="password" autocomplete="new-password" maxlength="128">
+              </div>
+              <button class="btn btn-primary" type="submit">Update password</button>
+              <p class="hint">Updating your password signs out all your other sessions.</p>
+            </div>
+          </form>
+        </section>
+
+        <section id="sessions">
+          <h2 class="section-title">Sessions</h2>
+          <div class="box box-danger">
+            <div class="box-header"><h3>Sign out everywhere</h3></div>
+            <div class="box-body row">
+              <p class="muted spacer">Immediately invalidate every session for your account on every device, including this one.</p>
+              <button class="btn btn-danger" id="revoke-all" type="button">Sign out all sessions</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="activity">
+          <h2 class="section-title">Security log</h2>
+          <div class="box">
+            <div class="box-header"><h3>Your recent security events</h3><button class="btn btn-sm" id="activity-refresh" type="button">Refresh</button></div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Event</th><th>Detail</th><th>IP</th><th>When</th></tr></thead>
+                <tbody id="activity-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="headers">
+          <h2 class="section-title">Response headers</h2>
+          <div class="box">
+            <div class="box-header"><h3>Live security headers on this app's API responses</h3><button class="btn btn-sm" id="headers-refresh" type="button">Re-check</button></div>
+            <div id="headers-body"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

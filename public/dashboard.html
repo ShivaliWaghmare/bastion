@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vault · Bastion</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/common.js" defer></script>
+  <script src="/static/js/dashboard.js" defer></script>
+</head>
+<body data-auth="required" data-page="dashboard">
+  <header class="app-header">
+    <a class="brand" href="/dashboard">
+      <svg class="logo" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 3.9-2.5 7.4-6 8.9-3.5-1.5-6-5-6-8.9V6.45l6-2.25Z"/><path fill="currentColor" d="M10.5 14.6 7.9 12l1.4-1.4 1.2 1.2 4.2-4.2 1.4 1.4-5.6 5.6Z"/></svg>
+      <span>bastion</span>
+    </a>
+    <nav class="app-nav" aria-label="Main">
+      <a href="/dashboard" data-nav="dashboard">Vault</a>
+      <a href="/security" data-nav="security">Security</a>
+      <a href="/admin" data-nav="admin" data-admin-only hidden>Admin</a>
+    </nav>
+    <div class="header-right">
+      <span class="session-pill" id="session-timer"></span>
+      <span class="user-chip"><span class="avatar" id="user-avatar"></span><span class="name" id="user-name"></span></span>
+      <button class="btn btn-sm" id="logout-btn" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="vault">
+      <aside class="box">
+        <div class="box-header">
+          <h2>Notes <span class="label" id="note-count">0</span></h2>
+          <button class="btn btn-primary btn-sm" id="new-note" type="button">New</button>
+        </div>
+        <div class="filter-wrap">
+          <label class="sr-only" for="note-filter">Filter notes</label>
+          <input class="input" id="note-filter" type="search" placeholder="Filter notes…" autocomplete="off">
+        </div>
+        <ul class="note-list" id="note-list" role="listbox" aria-label="Notes"></ul>
+      </aside>
+
+      <section>
+        <div class="box" id="empty-state">
+          <div class="blankslate">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="40" height="40"><path fill="currentColor" d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm0 2v16h12V8h-4V4H6Zm2 8h8v2H8v-2Zm0 4h5v2H8v-2Z"/></svg>
+            </div>
+            <h3>Your encrypted vault</h3>
+            <p>Select a note on the left, or create a new one. Everything you write is encrypted with AES-256-GCM before it touches disk.</p>
+            <button class="btn btn-primary" id="empty-new" type="button">Create a note</button>
+          </div>
+        </div>
+
+        <form class="box" id="editor" hidden novalidate>
+          <div class="box-header">
+            <span class="enc-badge">
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M4 6V4a4 4 0 1 1 8 0v2h.5A1.5 1.5 0 0 1 14 7.5v6a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5v-6A1.5 1.5 0 0 1 3.5 6H4Zm1.5 0h5V4a2.5 2.5 0 0 0-5 0v2Z"/></svg>
+              AES-256-GCM
+            </span>
+            <span class="row small muted"><span class="dirty-dot" id="dirty-flag" hidden title="Unsaved changes"></span><span id="note-meta"></span></span>
+          </div>
+          <div class="box-body">
+            <label class="sr-only" for="note-title">Title</label>
+            <input class="editor-title" id="note-title" type="text" maxlength="120" placeholder="Untitled note" autocomplete="off">
+            <label class="sr-only" for="note-body">Note</label>
+            <textarea class="input editor-body" id="note-body" maxlength="20000" placeholder="Write something private…"></textarea>
+          </div>
+          <div class="box-footer row">
+            <button class="btn btn-primary" id="save-note" type="submit">Save note</button>
+            <span class="small subtle"><span class="kbd">Ctrl</span> + <span class="kbd">S</span></span>
+            <span class="spacer"></span>
+            <span class="small mono subtle" id="body-count">0 / 20000</span>
+            <button class="btn btn-danger" id="delete-note" type="button" hidden>Delete</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

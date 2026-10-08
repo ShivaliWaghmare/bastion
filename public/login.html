@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · Bastion</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/common.js" defer></script>
+  <script src="/static/js/login.js" defer></script>
+</head>
+<body data-auth="guest" data-page="login">
+  <main class="auth-wrap">
+    <a class="auth-logo" href="/" aria-label="Bastion home">
+      <svg viewBox="0 0 24 24" width="48" height="48" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 3.9-2.5 7.4-6 8.9-3.5-1.5-6-5-6-8.9V6.45l6-2.25Z"/><path fill="currentColor" d="M10.5 14.6 7.9 12l1.4-1.4 1.2 1.2 4.2-4.2 1.4 1.4-5.6 5.6Z"/></svg>
+    </a>
+
+    <!-- Step 1: password -->
+    <section id="step-password">
+      <h1 class="auth-title">Sign in to Bastion</h1>
+      <div id="flash" class="flash" role="alert" hidden></div>
+      <form id="login-form" class="auth-card" novalidate>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input class="input" id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="64" required autofocus>
+        </div>
+        <div class="form-group">
+          <div class="label-row"><label for="password">Password</label></div>
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" id="login-btn">Sign in</button>
+      </form>
+      <p class="auth-alt">New to Bastion? <a href="/register">Create an account</a>.</p>
+    </section>
+
+    <!-- Step 2: TOTP -->
+    <section id="step-mfa" hidden>
+      <div class="mfa-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm0 2v16h10V4H7Zm4 13h2v2h-2v-2Z"/></svg>
+      </div>
+      <h1 class="auth-title">Two-factor authentication</h1>
+      <div id="mfa-flash" class="flash" role="alert" hidden></div>
+      <form id="mfa-form" class="auth-card" novalidate>
+        <div class="form-group">
+          <label for="code">Authentication code</label>
+          <input class="input input-code" id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="\d{6}" maxlength="6" placeholder="XXXXXX" required>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" id="mfa-btn">Verify</button>
+        <p class="hint">Open your authenticator app and enter the 6-digit code for <strong>Bastion</strong>.</p>
+      </form>
+      <p class="auth-alt"><a href="/login">Cancel and start over</a></p>
+    </section>
+
+    <p class="auth-note">Five failed attempts lock an account for 15 minutes. All sign-in activity is logged.</p>
+  </main>
+</body>
+</html>

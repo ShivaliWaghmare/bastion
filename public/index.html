@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bastion · Secure notes vault</title>
+  <meta name="description" content="A secure notes vault built to practise web application security.">
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/common.js" defer></script>
+  <script src="/static/js/index.js" defer></script>
+</head>
+<body data-auth="optional" data-page="index">
+  <header class="app-header site-header">
+    <a class="brand" href="/">
+      <svg class="logo" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 3.9-2.5 7.4-6 8.9-3.5-1.5-6-5-6-8.9V6.45l6-2.25Z"/><path fill="currentColor" d="M10.5 14.6 7.9 12l1.4-1.4 1.2 1.2 4.2-4.2 1.4 1.4-5.6 5.6Z"/></svg>
+      <span>bastion</span>
+    </a>
+    <div class="header-right">
+      <span data-guest><a class="btn btn-invisible btn-sm" href="/login">Sign in</a></span>
+      <span data-guest><a class="btn btn-sm" href="/register">Sign up</a></span>
+      <span data-member hidden><a class="btn btn-primary btn-sm" href="/dashboard">Open vault</a></span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow"><span class="dot"></span>v1.0 · security practice lab · zero dependencies</span>
+        <h1>Your notes, behind<br><span class="grad">real security controls.</span></h1>
+        <p class="lead">Bastion is an encrypted notes vault that implements the OWASP Top 10 defences end to end — so you can read the code, attack it, and watch the controls hold.</p>
+        <div class="cta">
+          <a class="btn btn-primary btn-lg" href="/register" data-guest>Create an account</a>
+          <a class="btn btn-lg" href="/login" data-guest>Sign in</a>
+          <a class="btn btn-primary btn-lg" href="/dashboard" data-member hidden>Open your vault</a>
+          <a class="btn btn-lg" href="#controls">See the controls</a>
+        </div>
+      </div>
+      <div class="terminal" aria-hidden="true">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="title">~/bastion — npm test</span></div>
+<pre><span class="t-cmd">$ npm test</span>
+<span class="t-ok">✔</span> security headers: strict CSP, anti-framing
+<span class="t-ok">✔</span> session ID rotated on login <span class="t-dim">(anti-fixation)</span>
+<span class="t-ok">✔</span> CSRF token + origin + fetch-metadata
+<span class="t-ok">✔</span> notes encrypted at rest <span class="t-dim">(AES-256-GCM)</span>
+<span class="t-ok">✔</span> IDOR blocked <span class="t-dim">— same 404 as missing</span>
+<span class="t-ok">✔</span> RBAC on every admin route
+<span class="t-ok">✔</span> lockout after 5 failed logins
+<span class="t-ok">✔</span> TOTP 2FA with replay protection
+<span class="t-ok">✔</span> path traversal blocked
+<span class="t-dim">ℹ tests 19</span>
+<span class="t-ok">ℹ pass 19</span>  <span class="t-dim">fail 0</span></pre>
+      </div>
+    </section>
+
+    <section class="section" id="controls">
+      <div class="section-head">
+        <div>
+          <h2>Security controls</h2>
+          <p>Every control below is live in this app. Each card points to the file that implements it.</p>
+        </div>
+        <span class="label label-success">12 active</span>
+      </div>
+      <div class="controls-grid">
+        <article class="control"><h3><span class="status-dot"></span>Password hashing</h3><p>scrypt (memory-hard) with a unique salt per user, constant-time comparison, and NIST 800-63B length + blocklist policy.</p><div class="meta"><span class="path">src/security/password.js</span><span class="label">A02 · A07</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Encryption at rest</h3><p>Notes and 2FA secrets are sealed with AES-256-GCM. Associated data binds each ciphertext to its record and owner.</p><div class="meta"><span class="path">src/security/encryption.js</span><span class="label">A02</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Two-factor auth</h3><p>RFC 6238 TOTP with ±30 s drift tolerance and replay protection. QR code generated server-side, secret encrypted.</p><div class="meta"><span class="path">src/security/totp.js</span><span class="label">A07</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Hardened sessions</h3><p>256-bit IDs, HMAC-signed HttpOnly + SameSite=Strict cookies, rotation on login, idle and absolute timeouts.</p><div class="meta"><span class="path">src/lib/sessions.js</span><span class="label">A07</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>CSRF defence</h3><p>Synchronizer token, Origin check and Fetch-Metadata rejection, layered on top of SameSite cookies.</p><div class="meta"><span class="path">src/security/csrf.js</span><span class="label">A01</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Content Security Policy</h3><p>Only same-origin scripts and styles — no inline code, no eval. Plus anti-framing, nosniff and a strict referrer policy.</p><div class="meta"><span class="path">src/security/headers.js</span><span class="label">A05</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Access control</h3><p>Every note query is scoped to its owner (no IDOR). Admin routes check roles server-side; pages are guarded too.</p><div class="meta"><span class="path">src/routes/notes.js</span><span class="label">A01</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Brute-force protection</h3><p>Per-IP rate limits with standard RateLimit headers, plus per-account lockout after five consecutive failures.</p><div class="meta"><span class="path">src/security/rateLimit.js</span><span class="label">A07</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Input validation</h3><p>Strict allow-list schemas reject unknown fields, wrong types and prototype-pollution keys. Bodies capped at 32 KB.</p><div class="meta"><span class="path">src/validation.js</span><span class="label">A03 · A08</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>XSS-safe rendering</h3><p>The UI builds DOM with textContent only — no innerHTML anywhere. Try saving <code>&lt;img src=x onerror=alert(1)&gt;</code>.</p><div class="meta"><span class="path">public/static/js/common.js</span><span class="label">A03</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>No user enumeration</h3><p>Identical errors and equalised timing whether a username exists or not, including for locked accounts.</p><div class="meta"><span class="path">src/routes/auth.js</span><span class="label">A07</span></div></article>
+        <article class="control"><h3><span class="status-dot"></span>Audit logging</h3><p>Failed logins, lockouts, CSRF rejections, IDOR attempts and admin actions are recorded — never passwords or content.</p><div class="meta"><span class="path">src/audit.js</span><span class="label">A09</span></div></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>Bastion · built for learning secure web development</span>
+    <span class="mono">bound to 127.0.0.1 · secrets auto-generated in data/</span>
+  </footer>
+</body>
+</html>

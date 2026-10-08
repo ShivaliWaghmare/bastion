@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account · Bastion</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/common.js" defer></script>
+  <script src="/static/js/register.js" defer></script>
+</head>
+<body data-auth="guest" data-page="register">
+  <main class="auth-wrap">
+    <a class="auth-logo" href="/" aria-label="Bastion home">
+      <svg viewBox="0 0 24 24" width="48" height="48" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 3.9-2.5 7.4-6 8.9-3.5-1.5-6-5-6-8.9V6.45l6-2.25Z"/><path fill="currentColor" d="M10.5 14.6 7.9 12l1.4-1.4 1.2 1.2 4.2-4.2 1.4 1.4-5.6 5.6Z"/></svg>
+    </a>
+    <h1 class="auth-title">Create your account</h1>
+    <div id="flash" class="flash" role="alert" hidden></div>
+
+    <form id="register-form" class="auth-card auth-card-wide" novalidate>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input class="input" id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="32" required autofocus>
+        <p class="hint">3–32 characters: letters, numbers or underscore.</p>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input class="input" id="password" name="password" type="password" autocomplete="new-password" maxlength="128" required>
+        <div class="meter" aria-hidden="true"><div class="meter-bar" id="meter-bar"></div></div>
+        <div class="meter-label"><span id="meter-label"></span><span class="mono" id="pw-len">0 / 128</span></div>
+        <ul class="checklist" id="checklist">
+          <li data-rule="length">At least 12 characters</li>
+          <li data-rule="username">Doesn't contain your username</li>
+          <li data-rule="match">Passwords match</li>
+        </ul>
+      </div>
+      <div class="form-group">
+        <label for="confirm">Confirm password</label>
+        <input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" maxlength="128" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" id="register-btn">Create account</button>
+      <p class="hint">Tip: a passphrase of 4+ random words is long, memorable and strong.</p>
+    </form>
+    <p class="auth-alt">Already have an account? <a href="/login">Sign in</a>.</p>
+  </main>
+</body>
+</html>

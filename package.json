@@ -1,0 +1,17 @@
+{
+  "name": "bastion-secure-vault",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bastion — a secure notes vault for practising web application security (OWASP Top 10 controls). Zero dependencies: pure Node.js.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "reset": "node scripts/reset.js"
+  },
+  "engines": {
+    "node": ">=18.18"
+  },
+  "dependencies": {}
+}

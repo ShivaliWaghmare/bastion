@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · Bastion</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/common.js" defer></script>
+  <script src="/static/js/admin.js" defer></script>
+</head>
+<body data-auth="required" data-page="admin">
+  <header class="app-header">
+    <a class="brand" href="/dashboard">
+      <svg class="logo" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm0 2.2 6 2.25V11c0 3.9-2.5 7.4-6 8.9-3.5-1.5-6-5-6-8.9V6.45l6-2.25Z"/><path fill="currentColor" d="M10.5 14.6 7.9 12l1.4-1.4 1.2 1.2 4.2-4.2 1.4 1.4-5.6 5.6Z"/></svg>
+      <span>bastion</span>
+    </a>
+    <nav class="app-nav" aria-label="Main">
+      <a href="/dashboard" data-nav="dashboard">Vault</a>
+      <a href="/security" data-nav="security">Security</a>
+      <a href="/admin" data-nav="admin" data-admin-only hidden>Admin</a>
+    </nav>
+    <div class="header-right">
+      <span class="session-pill" id="session-timer"></span>
+      <span class="user-chip"><span class="avatar" id="user-avatar"></span><span class="name" id="user-name"></span></span>
+      <button class="btn btn-sm" id="logout-btn" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-head">
+      <div>
+        <h1>Admin console</h1>
+        <p>Users, lockouts and the security audit log. This page and its API are restricted to the <span class="label label-done">admin</span> role server-side.</p>
+      </div>
+      <button class="btn" id="refresh" type="button">Refresh</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="stack">
+      <section class="box">
+        <div class="box-header"><h2>Users</h2><span class="label" id="user-count"></span></div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>User</th><th>Role</th><th>2FA</th><th>Status</th><th>Notes</th><th>Last sign-in</th><th aria-label="Actions"></th></tr></thead>
+            <tbody id="users-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="box">
+        <div class="box-header">
+          <h2>Audit log</h2>
+          <div class="row audit-filters">
+            <label class="sr-only" for="audit-level">Level</label>
+            <select class="input" id="audit-level">
+              <option value="">All events</option>
+              <option value="warn">Warnings only</option>
+            </select>
+            <label class="sr-only" for="audit-search">Search</label>
+            <input class="input audit-search" id="audit-search" type="search" placeholder="Filter by event, user, IP…" autocomplete="off">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Event</th><th>User</th><th>Detail</th><th>IP</th><th>When</th></tr></thead>
+            <tbody id="audit-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
